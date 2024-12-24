@@ -261,7 +261,9 @@ const circleIntersection = new CircleIntersection(defaultParameters);
 new CanvasParameters(
 	[
 		{
-			type: "number",
+			type: "range",
+			min: "0",
+			max: "10",
 			placeholder: "Количество шаров",
 			name: "circlesNum",
 			value: circleIntersection.circlesNum.toString(),
@@ -270,7 +272,10 @@ new CanvasParameters(
 			},
 		},
 		{
-			type: "number",
+			type: "range",
+			min: "0",
+			max: "5",
+			step: "0.1",
 			placeholder: "Скорость перемещения",
 			name: "circleSpeed",
 			value: circleIntersection.circleSpeed.toString(),
@@ -289,6 +294,7 @@ new CanvasParameters(
 		},
 	],
 	{
+		helpText: ["Двойной клик что бы показать / скрыть настройки"],
 		onUpdateCanvas: () => {
 			circleIntersection.createCircles();
 			const id = circleIntersection.updateAnimation();
