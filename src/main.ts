@@ -1,4 +1,4 @@
-import CanvasParameters from "canvas-parameters";
+import { Pane } from "tweakpane";
 
 interface ICircle {
 	color: string;
@@ -256,49 +256,48 @@ const defaultParameters = {
 	intersectionFillColor: "#ffffff",
 };
 
-const circleIntersection = new CircleIntersection(defaultParameters);
+const rerenderCanvas = () => {
+	circleIntersection.createCircles();
+	const id = circleIntersection.updateAnimation();
+	cancelAnimationFrame(id);
+};
 
-new CanvasParameters(
-	[
-		{
-			type: "range",
-			min: "0",
-			max: "10",
-			placeholder: "Количество шаров",
-			name: "circlesNum",
-			value: circleIntersection.circlesNum.toString(),
-			onChange: (value) => {
-				circleIntersection.setCirclesNum(value);
-			},
-		},
-		{
-			type: "range",
-			min: "0",
-			max: "5",
-			step: "0.1",
-			placeholder: "Скорость перемещения",
-			name: "circleSpeed",
-			value: circleIntersection.circleSpeed.toString(),
-			onChange: (value) => {
-				circleIntersection.setCircleSpeed(value);
-			},
-		},
-		{
-			type: "color",
-			placeholder: "Цвет точек перемещения",
-			name: "intersectionFillColor",
-			value: circleIntersection.intersectionFillColor,
-			onChange: (value) => {
-				circleIntersection.setIntersectionFillColor(value);
-			},
-		},
-	],
+const pane = new Pane();
+const f1 = pane.addFolder({
+	title: "Настройки",
+});
+
+const ballsCountHandler = f1.addBinding(defaultParameters, "circlesNum", {
+	label: "Количество шаров",
+	min: 2,
+	max: 10,
+	step: 1,
+});
+const ballsSpeedHandler = f1.addBinding(defaultParameters, "circleSpeed", {
+	label: "Скорость перемещения",
+	min: 0,
+	max: 5,
+	step: 0.1,
+});
+const intersectionColor = f1.addBinding(
+	defaultParameters,
+	"intersectionFillColor",
 	{
-		helpText: ["Двойной клик что бы показать / скрыть настройки"],
-		onUpdateCanvas: () => {
-			circleIntersection.createCircles();
-			const id = circleIntersection.updateAnimation();
-			cancelAnimationFrame(id);
-		},
+		label: "Цвет точек пересечения",
 	},
 );
+
+ballsCountHandler.on("change", (e) => {
+	circleIntersection.setCirclesNum(e.value);
+	rerenderCanvas();
+});
+ballsSpeedHandler.on("change", (e) => {
+	circleIntersection.setCircleSpeed(e.value);
+	rerenderCanvas();
+});
+intersectionColor.on("change", (e) => {
+	circleIntersection.setIntersectionFillColor(e.value);
+	rerenderCanvas();
+});
+
+const circleIntersection = new CircleIntersection(defaultParameters);
